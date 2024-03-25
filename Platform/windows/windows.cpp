@@ -39,3 +39,16 @@ void windows::Create() {
 
     ShowWindow(hwnd, SW_SHOWDEFAULT);
 }
+
+bool windows::ProcessEvent() {
+    MSG msg = {0};
+
+    while(PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+        if(msg.message == WM_QUIT) {
+            return true;
+        }
+    }
+    return false;
+}

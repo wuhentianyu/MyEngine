@@ -12,6 +12,7 @@
 class windows : public IPlateFormWindow {
 public:
     void Create() override;
+    bool ProcessEvent() override;
 };
 
 
