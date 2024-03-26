@@ -4,8 +4,6 @@
 
 #include "windows.h"
 
-#include "windows.h"
-
 void windows::Create() {
     const char CLASS_NAME[]  = "myengine";
 
@@ -40,7 +38,7 @@ void windows::Create() {
     ShowWindow(hwnd, SW_SHOWDEFAULT);
 }
 
-bool windows::ProcessEvent() {
+bool windows::Tick() {
     MSG msg = {0};
 
     while(PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {

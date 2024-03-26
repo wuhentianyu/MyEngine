@@ -8,5 +8,4 @@ add_executable(MyEngine main.cpp
         Platform/windows/windows.cpp
         Platform/windows/windows.h
         Platform/IPlateFormWindow.cpp
-        Platform/MainLoop.cpp
-        Platform/MainLoop.h)
+)

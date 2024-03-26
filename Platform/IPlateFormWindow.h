@@ -13,7 +13,7 @@
 class IPlateFormWindow {
 public:
     virtual void Create() = 0;
-    virtual bool HanleEvent() = 0;
+    virtual bool Tick() = 0;
 };
 
 
