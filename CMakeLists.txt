@@ -8,4 +8,11 @@ add_executable(MyEngine main.cpp
         Platform/windows/windows.cpp
         Platform/windows/windows.h
         Platform/IPlateFormWindow.cpp
+        RenderModule/RHI.h
 )
+
+
+add_subdirectory(RenderModule/D3D11)
+
+
+target_link_libraries(MyEngine D3D11)

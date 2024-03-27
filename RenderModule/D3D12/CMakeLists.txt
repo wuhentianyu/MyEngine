@@ -1,0 +1,1 @@
+add_library(D3D12 SHARED D3D12Context.cpp D3D12Context.h)

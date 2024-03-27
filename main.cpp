@@ -2,7 +2,6 @@
 
 #include <memory>
 
-#include "Platform/MainLoop.h"
 #include "Platform/windows/windows.h"
 
 extern std::unique_ptr<IPlateFormWindow> Plateform;
@@ -14,9 +13,6 @@ int main() {
     }
     else {
         Plateform->Create();
-        MainLoop mainLoop;
-        mainLoop.Init();
-        mainLoop.Update();
     }
     return 0;
 }
