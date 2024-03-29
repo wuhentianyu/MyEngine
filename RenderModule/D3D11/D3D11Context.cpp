@@ -3,7 +3,12 @@
 //
 
 
+#include <memory>
 #include "D3D11Context.h"
+#include "../../Platform/IPlateFormWindow.h"
+#include "../../Platform/windows/windows.h"
+
+extern std::unique_ptr<IPlateFormWindow> Plateform;
 
 bool D3D11Context::Init() {
     // 创建设备和设备上下文
@@ -24,8 +29,22 @@ bool D3D11Context::Init() {
         return false;
     }
 
+    if(Plateform == nullptr) return false;
+    auto window = dynamic_cast<windows*>(Plateform.get());
+    if(window == nullptr) return false;
+
+
     // 创建交换链
     DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
+    swapChainDesc.BufferCount = 2;  // 后缓冲区数量
+    swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;  // 缓冲区格式
+    swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;  // 缓冲区用途
+    swapChainDesc.BufferDesc.Width = window->GetWidth();  // 缓冲区宽度
+    swapChainDesc.BufferDesc.Height = window->GetHeight();  // 缓冲区高度
+    swapChainDesc.OutputWindow = window->GetWindowHandle();  // 输出窗口的句柄
+    swapChainDesc.SampleDesc.Count = 1;  // 多重采样数量
+    swapChainDesc.SampleDesc.Quality = 0;  // 多重采样质量
+    swapChainDesc.Windowed = TRUE;  // 是否窗口化
     // ...设置交换链描述
     ComPtr<IDXGIDevice> dxgiDevice;
     device.As(&dxgiDevice);
@@ -41,14 +60,30 @@ bool D3D11Context::Init() {
 
     // 创建深度模板视图
     D3D11_TEXTURE2D_DESC depthStencilDesc = {};
-    // ...设置深度模板描述
+    depthStencilDesc.Width = window->GetWidth();  // 纹理宽度
+    depthStencilDesc.Height = window->GetHeight();  // 纹理高度
+    depthStencilDesc.MipLevels = 1;  // Mipmap级别，1表示只有一级
+    depthStencilDesc.ArraySize = 1;  // 纹理数组的大小，1表示只有一个纹理
+    depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;  // 纹理格式，这里是24位深度+8位模板
+    depthStencilDesc.SampleDesc.Count = 1;  // 多重采样数量
+    depthStencilDesc.SampleDesc.Quality = 0;  // 多重采样质量
+    depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;  // 纹理的使用方式，这里是默认
+    depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;  // 绑定标志，这里是深度模板
+    depthStencilDesc.CPUAccessFlags = 0;  // CPU访问标志，0表示CPU无法访问
+    depthStencilDesc.MiscFlags = 0;  // 其他标志，0表示无其他标志
+
     device->CreateTexture2D(&depthStencilDesc, nullptr, &depthStencilBuffer);
 
     device->CreateDepthStencilView(depthStencilBuffer.Get(), nullptr, &depthStencilView);
 
     // 设置视口
     D3D11_VIEWPORT viewport = {};
-    // ...设置视口
+    viewport.TopLeftX = 0;  // 视口的左上角的x坐标
+    viewport.TopLeftY = 0;  // 视口的左上角的y坐标
+    viewport.Width = static_cast<float>(window->GetWidth());  // 视口的宽度
+    viewport.Height = static_cast<float>(window->GetHeight());  // 视口的高度
+    viewport.MinDepth = 0.0f;  // 最小深度值
+    viewport.MaxDepth = 1.0f;  // 最大深度值
     context->RSSetViewports(1, &viewport);
 
     return true;
@@ -73,7 +108,7 @@ void D3D11Context::Cleanup() {
 
 void D3D11Context::BeginRender() {
     // 清除渲染目标视图
-    float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f }; // RGBA
+    float clearColor[4] = { 1.0f, 0.0f, 0.0f, 1.0f }; // RGBA
     context->ClearRenderTargetView(renderTargetView.Get(), clearColor);
 
     // 清除深度模板视图

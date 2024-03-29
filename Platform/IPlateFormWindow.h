@@ -12,8 +12,16 @@
 
 class IPlateFormWindow {
 public:
-    virtual void Create() = 0;
+    virtual ~IPlateFormWindow() = default;
+    virtual void Create(int width,int height) = 0;
     virtual bool Tick() = 0;
+
+    int GetWidth() const {return width;}
+    int GetHeight() const {return height;}
+
+protected:
+    int width;
+    int height;
 };
 
 
