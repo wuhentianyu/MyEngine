@@ -1,9 +1,9 @@
 
 #include "ApplicationContext.h"
 
-
+ApplicationContext app;
 int main() {
-    ApplicationContext app;
     app.Init();
+    app.Cleanup();
     return 0;
 }

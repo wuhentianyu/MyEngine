@@ -13,6 +13,7 @@ class windows : public IPlateFormWindow {
 public:
     void Create(int width,int height) override;
     bool Tick() override;
+    void CleanUp() override;
     HWND GetWindowHandle() const {return hwnd;}
 private:
     HWND hwnd;

@@ -6,11 +6,12 @@
 #include <memory>
 #include "D3D11Context.h"
 #include "../../Platform/IPlateFormWindow.h"
-#include "../../Platform/windows/windows.h"
+#include "../../ApplicationContext.h"
 
-extern std::unique_ptr<IPlateFormWindow> Plateform;
 
+extern ApplicationContext app;
 bool D3D11Context::Init() {
+    auto Plateform = app.GetPlateform();
     // 创建设备和设备上下文
     D3D_FEATURE_LEVEL featureLevel;
     HRESULT hr = D3D11CreateDevice(
@@ -30,8 +31,6 @@ bool D3D11Context::Init() {
     }
 
     if(Plateform == nullptr) return false;
-    auto window = dynamic_cast<windows*>(Plateform.get());
-    if(window == nullptr) return false;
 
 
     // 创建交换链
@@ -39,9 +38,9 @@ bool D3D11Context::Init() {
     swapChainDesc.BufferCount = 2;  // 后缓冲区数量
     swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;  // 缓冲区格式
     swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;  // 缓冲区用途
-    swapChainDesc.BufferDesc.Width = window->GetWidth();  // 缓冲区宽度
-    swapChainDesc.BufferDesc.Height = window->GetHeight();  // 缓冲区高度
-    swapChainDesc.OutputWindow = window->GetWindowHandle();  // 输出窗口的句柄
+    swapChainDesc.BufferDesc.Width = Plateform->GetWidth();  // 缓冲区宽度
+    swapChainDesc.BufferDesc.Height = Plateform->GetHeight();  // 缓冲区高度
+    swapChainDesc.OutputWindow = Plateform->GetWindowHandle();  // 输出窗口的句柄
     swapChainDesc.SampleDesc.Count = 1;  // 多重采样数量
     swapChainDesc.SampleDesc.Quality = 0;  // 多重采样质量
     swapChainDesc.Windowed = TRUE;  // 是否窗口化
@@ -60,8 +59,8 @@ bool D3D11Context::Init() {
 
     // 创建深度模板视图
     D3D11_TEXTURE2D_DESC depthStencilDesc = {};
-    depthStencilDesc.Width = window->GetWidth();  // 纹理宽度
-    depthStencilDesc.Height = window->GetHeight();  // 纹理高度
+    depthStencilDesc.Width = Plateform->GetWidth();  // 纹理宽度
+    depthStencilDesc.Height = Plateform->GetHeight();  // 纹理高度
     depthStencilDesc.MipLevels = 1;  // Mipmap级别，1表示只有一级
     depthStencilDesc.ArraySize = 1;  // 纹理数组的大小，1表示只有一个纹理
     depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;  // 纹理格式，这里是24位深度+8位模板
@@ -80,8 +79,8 @@ bool D3D11Context::Init() {
     D3D11_VIEWPORT viewport = {};
     viewport.TopLeftX = 0;  // 视口的左上角的x坐标
     viewport.TopLeftY = 0;  // 视口的左上角的y坐标
-    viewport.Width = static_cast<float>(window->GetWidth());  // 视口的宽度
-    viewport.Height = static_cast<float>(window->GetHeight());  // 视口的高度
+    viewport.Width = static_cast<float>(Plateform->GetWidth());  // 视口的宽度
+    viewport.Height = static_cast<float>(Plateform->GetHeight());  // 视口的高度
     viewport.MinDepth = 0.0f;  // 最小深度值
     viewport.MaxDepth = 1.0f;  // 最大深度值
     context->RSSetViewports(1, &viewport);

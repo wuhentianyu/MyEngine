@@ -83,3 +83,7 @@ bool windows::Tick() {
     return false;
 }
 
+void windows::CleanUp() {
+    DestroyWindow(hwnd);
+    UnregisterClass("myengine", GetModuleHandle(NULL));
+}

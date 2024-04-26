@@ -6,12 +6,14 @@
 #include <iostream>
 #include "ApplicationContext.h"
 #include "Platform/IPlateFormWindow.h"
+#include "Platform/glfw/glfw.h"
 #include "RenderModule/RHI.h"
 #include "RenderModule/D3D11/D3D11Context.h"
 
-extern std::unique_ptr<IPlateFormWindow> Plateform;
+
 
 bool ApplicationContext::Init() {
+    Plateform = std::make_shared<glfw>();
     if(!Plateform)
     {
         std::cout << "WindowsPlateform is nullptr" << std::endl;
@@ -19,7 +21,7 @@ bool ApplicationContext::Init() {
     }
     else {
         Plateform->Create(1024,768);
-        std::unique_ptr<RHI> RenderContext = std::make_unique<D3D11Context>();
+        RenderContext = std::make_unique<D3D11Context>();
         if(!RenderContext->Init()) {
             std::cout << "RenderContext Init failed" << std::endl;
             return 1;
@@ -29,10 +31,11 @@ bool ApplicationContext::Init() {
             RenderContext->EndRender();
         }
     }
+    return 0;
 }
 
 void ApplicationContext::Cleanup() {
-
+    Plateform->CleanUp();
 }
 
 void ApplicationContext::Tick() {
